@@ -118,7 +118,7 @@ def processResolve(finalMove,dictParent):
         move = dictParent[hash(move)]
     return movesToProcess
 
-def main():
+def process():
     initialGrille = getMelange()
     afficher(initialGrille)
     #res = echanger(grille, 2,2,1,1)
@@ -153,10 +153,10 @@ def main():
     print(f"Terminé en {coups} coups")
     print(movesToProcess)
 
+    return initialGrille, movesToProcess
 
 
 
-main()
 
 
 
