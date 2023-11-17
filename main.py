@@ -1,5 +1,5 @@
 from aStar import process
-
+#import pygame
 
 
 def main():
@@ -7,3 +7,5 @@ def main():
     grilleInitial, resolution = process()
     
     print("end")
+    
+main()

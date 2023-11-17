@@ -140,6 +140,7 @@ def process():
             dictWeight[hash(move)] = weight
             dictParent[hash(move)] = tempGrille
 
+        bestMove = getBestMove(dictWeight)
         minWeight=9
         bestMove = None
         for hashedMove,weight in dictWeight.items():
@@ -154,13 +155,3 @@ def process():
     print(movesToProcess)
 
     return initialGrille, movesToProcess
-
-
-
-
-
-
-#allNext = getNextGenerations(grille)
-#print("---------Generations-------")
-#for g in allNext:
-#    afficher(g)
