@@ -1,36 +1,44 @@
-import heapq
-import copy
-from random import randint
-from math import sqrt,pow
+#Sert à simuler une file
+from heapq import heappop, heappush
+#Sert au mélange inital
+from random import randrange
+#Sert à l'algo A*
 from classes import TaquinNode
 
+import copy
+
 #Melange inital de la grille, un random complet peut emmener à des resolutions impossible
-def getMelange(complexity):
-    grille = [[1,2,3],[4,5,6],[7,8,None]]
+def getRandomGrid(complexity):
+    grid = [[1,2,3],[4,5,6],[7,8,None]]
+    #On part d'une grille résolue pour echanger effectuer un mouvement 
+    #dans un direction aleatoire X fois (X=complexity)
     for _ in range(complexity):
-        y1, x1 = randint(0,2), randint(0,2)
+        y1, x1 = randrange(3), randrange(3)
         switched = False
         while not switched:
-            y2, x2 = randint(0,2), randint(0,2)
+            y2, x2 = randrange(3), randrange(3)
             if areNeightbours(y1,x1,y2,x2):
                 switched = True
-                newGrid = copy.deepcopy(grille)
-                newGrid[y1][x1] = grille[y2][x2]
-                newGrid[y2][x2] = grille[y1][x1]
-                grille = copy.deepcopy(newGrid)
-    return grille
+                newGrid = copy.deepcopy(grid)
+                newGrid[y1][x1] = grid[y2][x2]
+                newGrid[y2][x2] = grid[y1][x1]
+                grid = copy.deepcopy(newGrid)
+    return grid
 
+#Retourne un boolean indiquant si les 2 points sont voisins (horizontalement ou verticalement)
+#Etre voisin en diagonale n'est pas correct car pas de mouvement en diagonale
 def areNeightbours(y1,x1,y2,x2):
-    distance = sqrt( pow(abs(y2-y1),2) + pow(abs(x2-x1),2) )
-    return str(distance) == "1.0"
+    #Decalage horizontal et vertical de 1 strictement (car 0 signifie case identique, et > 1 diagonale ou + loin)
+    return abs(y2-y1) + abs(x2-x1) == 1
 
+#Retourne l'emplacement du carré vide
 def get_blank_position(state):
     for i in range(3):
         for j in range(3):
             if state[i][j] == None:
                 return i, j
 
-
+#Retourne l'ensemble des voisins du carré vide
 def generate_neighbors(current_node):
         #On recupere les coords du carré vide
         emptyY, emptyX = get_blank_position(current_node.state)
@@ -42,11 +50,10 @@ def generate_neighbors(current_node):
 
             #On check si le coup est possible
             if 0 <= newY < 3 and 0 <= newX < 3:
-                new_state = [list(row) for row in current_node.state]
-                new_state[emptyY][emptyX], new_state[newY][newX] = (
-                    new_state[newY][newX],
-                    new_state[emptyY][emptyX],
-                )
+                new_state = copy.deepcopy(current_node.state)
+                #on genere le coup suivant et on l'ajoute à la liste résultat
+                new_state[emptyY][emptyX] = current_node.state[newY][newX]
+                new_state[newY][newX] = current_node.state[emptyY][emptyX]
                 neighbors.append(TaquinNode(new_state))
 
         return neighbors
@@ -59,11 +66,11 @@ def a_star(initial_state, goal_state):
     open_set = []  # Liste des nœuds à explorer
     closed_set = set()  # Ensemble des nœuds déjà explorés
 
-    heapq.heappush(open_set, initial_node)
+    heappush(open_set, initial_node)
 
     while open_set:
         #On recupere le sommet de la pile des noeuds à explorer
-        current_node = heapq.heappop(open_set)
+        current_node = heappop(open_set)
 
         #Si la grille est celle à atteindre
         if current_node.state == goal_node.state:
@@ -87,26 +94,26 @@ def a_star(initial_state, goal_state):
                 neighbor.toGetHereWeight = neighbor.previousWeights + neighbor.weight
                 neighbor.parent = current_node
 
-                heapq.heappush(open_set, neighbor)
+                heappush(open_set, neighbor)
 
     return None  # Aucun chemin trouvé
 
 
 def process():
     
-    goal_puzzle = [[1,2,3],[4,5,6],[7,8,None]]
+    goalGrid = [[1,2,3],[4,5,6],[7,8,None]]
     complexity = 100
     possible = False
     while not possible:
         # Exemple d'utilisation
-        initial_puzzle = getMelange(complexity)
+        initialGrid = getRandomGrid(complexity)
         
-        solution_path = a_star(initial_puzzle, goal_puzzle)
+        solution_path = a_star(initialGrid, goalGrid)
 
         if solution_path:
             possible = True
         else:
-            complexity -= 20
+            complexity -= 10
             
     for step, state in enumerate(solution_path):
         print(f"Step {step + 1}:")
@@ -116,5 +123,5 @@ def process():
     print(f"compleixty={complexity}")
 
     return solution_path
-                
+
 process()
