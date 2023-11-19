@@ -41,30 +41,33 @@ def get_blank_position(state):
 #Retourne l'ensemble des voisins du carré vide
 def generate_neighbors(current_node):
         #On recupere les coords du carré vide
-        emptyY, emptyX = get_blank_position(current_node.state)
+        emptyY, emptyX = get_blank_position(current_node.grid)
         neighbors = []
 
         #On test les 4 coups (max) possibles
         for move in [(0, 1), (1, 0), (0, -1), (-1, 0)]:
             newY, newX = emptyY + move[0], emptyX + move[1]
 
-            #On check si le coup est possible
+            #On check si le coup est possible (dans la grille)
             if 0 <= newY < 3 and 0 <= newX < 3:
-                new_state = copy.deepcopy(current_node.state)
+                new_state = copy.deepcopy(current_node.grid)
                 #on genere le coup suivant et on l'ajoute à la liste résultat
-                new_state[emptyY][emptyX] = current_node.state[newY][newX]
-                new_state[newY][newX] = current_node.state[emptyY][emptyX]
+                new_state[emptyY][emptyX] = current_node.grid[newY][newX]
+                new_state[newY][newX] = current_node.grid[emptyY][emptyX]
                 neighbors.append(TaquinNode(new_state))
 
         return neighbors
     
-def a_star(initial_state, goal_state):
+#Algo principal qui retourne un chemin (liste de grilles) pour arriver à 'goalGrid' depuis 'initialGrid'
+def a_star(initialGrid, goalGrid):
     
-    initial_node = TaquinNode(initial_state)
-    goal_node = TaquinNode(goal_state)
+    initial_node = TaquinNode(initialGrid)
+    goal_node = TaquinNode(goalGrid)
 
-    open_set = []  # Liste des nœuds à explorer
-    closed_set = set()  # Ensemble des nœuds déjà explorés
+    # Liste des nœuds à explorer
+    open_set = []  
+    # Ensemble des nœuds déjà explorés
+    closed_set = set()  
 
     heappush(open_set, initial_node)
 
@@ -73,21 +76,21 @@ def a_star(initial_state, goal_state):
         current_node = heappop(open_set)
 
         #Si la grille est celle à atteindre
-        if current_node.state == goal_node.state:
+        if current_node.grid == goal_node.grid:
             #On retourne le chemin de toutes les etapes parcourues
             path = []
             while current_node:
-                path.append(current_node.state)
+                path.append(current_node.grid)
                 current_node = current_node.parent
             return path[::-1]
 
-        closed_set.add(tuple(map(tuple, current_node.state)))
+        closed_set.add(tuple(map(tuple, current_node.grid)))
 
         for neighbor in generate_neighbors(current_node):
-            if tuple(map(tuple, neighbor.state)) not in closed_set:
+            if tuple(map(tuple, neighbor.grid)) not in closed_set:
                 neighbor.previousWeights = current_node.previousWeights + 1
                 neighbor.weight = sum(
-                    1 if neighbor.state[i][j] != goal_node.state[i][j] else 0
+                    1 if neighbor.grid[i][j] != goal_node.grid[i][j] else 0
                     for i in range(3)
                     for j in range(3)
                 )
