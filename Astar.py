@@ -4,8 +4,29 @@ from heapq import heappop, heappush
 from random import randrange
 #Sert à l'algo A*
 from classes import TaquinNode
-
+#Sert à copier des listes en dimensions N
 import copy
+
+
+heuristic = "manhattan"
+
+def hamming_heuristic(grid):
+    total = 0
+    for y in range(3):
+        for x in range(3):
+            if grid[y][x] == y*3+x+1:
+                total += 1
+    return 9-total
+
+def manhattan_heuristic(grid):
+    distance = 0
+    for i in range(3):
+        for j in range(3):
+            if grid[i][j] is not None:
+                value = grid[i][j] - 1
+                goal_row, goal_col = divmod(value, 3)
+                distance += abs(i - goal_row) + abs(j - goal_col)
+    return distance
 
 #Melange inital de la grille, un random complet peut emmener à des resolutions impossible
 def getRandomGrid(complexity):
@@ -89,11 +110,10 @@ def a_star(initialGrid, goalGrid):
         for neighbor in generate_neighbors(current_node):
             if tuple(map(tuple, neighbor.grid)) not in closed_set:
                 neighbor.previousWeights = current_node.previousWeights + 1
-                neighbor.weight = sum(
-                    1 if neighbor.grid[i][j] != goal_node.grid[i][j] else 0
-                    for i in range(3)
-                    for j in range(3)
-                )
+                if heuristic == "manhattan":
+                    neighbor.weight = manhattan_heuristic(neighbor.grid)
+                else:
+                    neighbor.weight = hamming_heuristic(neighbor.grid)
                 neighbor.toGetHereWeight = neighbor.previousWeights + neighbor.weight
                 neighbor.parent = current_node
 

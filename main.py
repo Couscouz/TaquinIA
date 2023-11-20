@@ -1,4 +1,4 @@
-from aStar import process
+from Astar import process
 import pygame
 
 
