@@ -8,8 +8,6 @@ from classes import TaquinNode
 import copy
 
 
-heuristic = "manhattan"
-
 def hamming_heuristic(grid):
     total = 0
     for y in range(3):
@@ -80,7 +78,7 @@ def generate_neighbors(current_node):
         return neighbors
     
 #Algo principal qui retourne un chemin (liste de grilles) pour arriver à 'goalGrid' depuis 'initialGrid'
-def a_star(initialGrid, goalGrid):
+def a_star(initialGrid, goalGrid, heuristic_fct):
     
     initial_node = TaquinNode(initialGrid)
     goal_node = TaquinNode(goalGrid)
@@ -110,10 +108,7 @@ def a_star(initialGrid, goalGrid):
         for neighbor in generate_neighbors(current_node):
             if tuple(map(tuple, neighbor.grid)) not in closed_set:
                 neighbor.previousWeights = current_node.previousWeights + 1
-                if heuristic == "manhattan":
-                    neighbor.weight = manhattan_heuristic(neighbor.grid)
-                else:
-                    neighbor.weight = hamming_heuristic(neighbor.grid)
+                neighbor.weight = heuristic_fct(neighbor.grid)
                 neighbor.toGetHereWeight = neighbor.previousWeights + neighbor.weight
                 neighbor.parent = current_node
 
@@ -127,11 +122,14 @@ def process():
     goalGrid = [[1,2,3],[4,5,6],[7,8,None]]
     complexity = 100
     possible = False
+    heuristic_Fct = manhattan_heuristic
+    # heuristic_Fct = hamming_heuristic
+    
     while not possible:
         # Exemple d'utilisation
         initialGrid = getRandomGrid(complexity)
         
-        solution_path = a_star(initialGrid, goalGrid)
+        solution_path = a_star(initialGrid, goalGrid, heuristic_Fct)
 
         if solution_path:
             possible = True
