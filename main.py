@@ -21,6 +21,22 @@ for i in range(9):
 
 #---------------------------------------------
 
+#Return Y,X, isLeft
+def getSquareFromClick(location):
+    horizontal = [(95,245), (246, 395), (396,545)]
+    vertical = [(175,325),(326,475),(476,625)]
+    offset = 0
+    
+    if location[1] > 640:
+        offset = 640
+
+    for y in range(3):
+        for x in range(3):
+            if offset+horizontal[x][0] < location[0] <= offset+horizontal[x][1] and vertical[y][0] < location[1] <= vertical[y][1]:
+                print(f"col={x} row={y}")
+                return y,x, (offset==0)
+    return None
+
 def main():
     
     fenetre = pygame.display.set_mode((1280, 800))
@@ -42,6 +58,10 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            elif event.type == pygame.MOUSEBUTTONUP:
+                pos = pygame.mouse.get_pos()
+                print(pos)
+                getSquareFromClick(pos)
 
         fenetre.blit(background, (0, 0))
         fenetre.blit(leftSquare, (95, 175))
