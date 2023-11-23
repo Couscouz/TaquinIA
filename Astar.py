@@ -136,11 +136,11 @@ def process():
         else:
             complexity -= 10
             
-    for step, state in enumerate(solution_path):
-        print(f"Step {step + 1}:")
-        for row in state:
-            print(row)
-        print()
+    # for step, state in enumerate(solution_path):
+    #     print(f"Step {step + 1}:")
+    #     for row in state:
+    #         print(row)
+    #     print()
     print(f"compleixty={complexity}")
 
     return solution_path
