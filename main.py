@@ -8,7 +8,7 @@ import includes.startButton as startButton
 import pygame
 
 
-complexity = 50
+complexity = 500
 
 pygame.init()
 

@@ -11,7 +11,6 @@ from grid import GOAL_GRID, getRandomGrid
 #Sert à copier des listes en dimensions N
 from copy import deepcopy
 
-
 #Retourne l'ensemble des voisins du carré vide
 def generateNeighbors(current_node):
         #On recupere les coords du carré vide
@@ -56,6 +55,7 @@ def a_star(initialGrid, goalGrid, heuristic_fct):
             while current_node:
                 path.append(current_node.grid)
                 current_node = current_node.parent
+            #
             return path[::-1]
 
         closed_set.add(tuple(map(tuple, current_node.grid)))
@@ -72,28 +72,15 @@ def a_star(initialGrid, goalGrid, heuristic_fct):
     return None  # Aucun chemin trouvé
 
 
-def process(complexity=100):
+def process(complexity=100, heuristic_Fct = manhattan_heuristic):
+        
+    path = None
     
-    
-    possible = False
-    heuristic_Fct = manhattan_heuristic
+    # heuristic_Fct = manhattan_heuristic
     # heuristic_Fct = hamming_heuristic
-    
-    while not possible:
-        # Exemple d'utilisation
+    print("searching")
+    while path is None:
         initialGrid = getRandomGrid(complexity)
-        
-        solution_path = a_star(initialGrid, GOAL_GRID, heuristic_Fct)
-
-        if solution_path:
-            possible = True
-        
-        print(f"not possible, complex={complexity}")
-    # for step, state in enumerate(solution_path):
-    #     print(f"Step {step + 1}:")
-    #     for row in state:
-    #         print(row)
-    #     print()
-    print(f"compleixty={complexity}")
-
-    return solution_path
+        print(initialGrid)
+        path =  a_star(initialGrid, GOAL_GRID, heuristic_Fct)
+    return path
