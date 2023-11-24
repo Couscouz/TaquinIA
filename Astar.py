@@ -4,6 +4,8 @@ from heapq import heappop, heappush
 from random import randrange
 #Sert à l'algo A*
 from classes import TaquinNode
+#
+from tools import getEmptyPosition,areNeightbours
 #Sert à copier des listes en dimensions N
 import copy
 
@@ -44,23 +46,11 @@ def getRandomGrid(complexity):
                 grid = copy.deepcopy(newGrid)
     return grid
 
-#Retourne un boolean indiquant si les 2 points sont voisins (horizontalement ou verticalement)
-#Etre voisin en diagonale n'est pas correct car pas de mouvement en diagonale
-def areNeightbours(y1,x1,y2,x2):
-    #Decalage horizontal et vertical de 1 strictement (car 0 signifie case identique, et > 1 diagonale ou + loin)
-    return abs(y2-y1) + abs(x2-x1) == 1
-
-#Retourne l'emplacement du carré vide
-def get_blank_position(state):
-    for i in range(3):
-        for j in range(3):
-            if state[i][j] == None:
-                return i, j
 
 #Retourne l'ensemble des voisins du carré vide
 def generate_neighbors(current_node):
         #On recupere les coords du carré vide
-        emptyY, emptyX = get_blank_position(current_node.grid)
+        emptyY, emptyX = getEmptyPosition(current_node.grid)
         neighbors = []
 
         #On test les 4 coups (max) possibles
@@ -144,5 +134,3 @@ def process():
     print(f"compleixty={complexity}")
 
     return solution_path
-
-process()

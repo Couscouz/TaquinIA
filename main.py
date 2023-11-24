@@ -1,5 +1,7 @@
 from colors import BLUE,BLACK,WHITE,YELLOW
-import Astar
+
+from tools import getEmptyPosition,areNeightbours,dim3to1
+from Astar import process as AstarGeneration
 import pygame
 
 pygame.init()
@@ -36,8 +38,8 @@ def checkWin(grid,status):
         print("Bien joué !")
     
 def processMove(grid, click):
-    noneY, noneX = Astar.get_blank_position(grid)
-    if not Astar.areNeightbours(noneX,noneY,click[1],click[0]):
+    noneY, noneX = getEmptyPosition(grid)
+    if not areNeightbours(noneX,noneY,click[1],click[0]):
         return
     for y in range(3):
         for x in range(3):
@@ -55,13 +57,6 @@ def refreshGrid(background, grid):
             else:
                 background.blit(whiteSquare, (x,y))
             index += 1
-            
-def dim3to1(grid):
-    res = []
-    for y in range(3):
-        for x in range(3):
-            res.append(grid[y][x])
-    return res
 
 def backgrounds(fenetre,background,leftSquare,rightSquare):
     fenetre.blit(background, (0, 0))
