@@ -60,6 +60,9 @@ def a_star(initialGrid, goalGrid, heuristic_fct):
 
         closed_set.add(tuple(map(tuple, current_node.grid)))
 
+        #Pour chaque suivant on l'ajoute au graphe (si il n'est pas deja dedans), en definissant son poids
+        #Amelioration possible : si il est deja dans le graphe et 
+        #que le poids pour y parvenir est inferieur à l'actuel on le met à jour
         for neighbor in generateNeighbors(current_node):
             if tuple(map(tuple, neighbor.grid)) not in closed_set:
                 neighbor.previousWeights = current_node.previousWeights + 1
@@ -71,16 +74,11 @@ def a_star(initialGrid, goalGrid, heuristic_fct):
 
     return None  # Aucun chemin trouvé
 
-
+#Permet d'autiliser l'algo A*
 def process(complexity=100, heuristic_Fct = manhattan_heuristic):
-        
-    path = None
     
     # heuristic_Fct = manhattan_heuristic
     # heuristic_Fct = hamming_heuristic
-    print("searching")
-    while path is None:
-        initialGrid = getRandomGrid(complexity)
-        print(initialGrid)
-        path =  a_star(initialGrid, GOAL_GRID, heuristic_Fct)
-    return path
+
+    initialGrid = getRandomGrid(complexity)
+    return a_star(initialGrid, GOAL_GRID, heuristic_Fct)
