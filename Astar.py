@@ -1,54 +1,19 @@
 #Sert à simuler une file
 from heapq import heappop, heappush
-#Sert au mélange inital
-from random import randrange
 #Sert à l'algo A*
 from classes import TaquinNode
-#
-from tools import getEmptyPosition,areNeightbours
+#Fonctions annexes agissant sur une grille
+from tools import getEmptyPosition
+#Calculs d'heuristic pour une grille donnée
+from heuristic import hamming_heuristic,manhattan_heuristic
+#Grille de départ et generation de grille aleatoire
+from grid import GOAL_GRID, getRandomGrid
 #Sert à copier des listes en dimensions N
-import copy
-
-
-def hamming_heuristic(grid):
-    total = 0
-    for y in range(3):
-        for x in range(3):
-            if grid[y][x] == y*3+x+1:
-                total += 1
-    return 9-total
-
-def manhattan_heuristic(grid):
-    distance = 0
-    for i in range(3):
-        for j in range(3):
-            if grid[i][j] is not None:
-                value = grid[i][j] - 1
-                goal_row, goal_col = divmod(value, 3)
-                distance += abs(i - goal_row) + abs(j - goal_col)
-    return distance
-
-#Melange inital de la grille, un random complet peut emmener à des resolutions impossible
-def getRandomGrid(complexity):
-    grid = [[1,2,3],[4,5,6],[7,8,None]]
-    #On part d'une grille résolue pour echanger effectuer un mouvement 
-    #dans un direction aleatoire X fois (X=complexity)
-    for _ in range(complexity):
-        y1, x1 = randrange(3), randrange(3)
-        switched = False
-        while not switched:
-            y2, x2 = randrange(3), randrange(3)
-            if areNeightbours(y1,x1,y2,x2):
-                switched = True
-                newGrid = copy.deepcopy(grid)
-                newGrid[y1][x1] = grid[y2][x2]
-                newGrid[y2][x2] = grid[y1][x1]
-                grid = copy.deepcopy(newGrid)
-    return grid
+from copy import deepcopy
 
 
 #Retourne l'ensemble des voisins du carré vide
-def generate_neighbors(current_node):
+def generateNeighbors(current_node):
         #On recupere les coords du carré vide
         emptyY, emptyX = getEmptyPosition(current_node.grid)
         neighbors = []
@@ -59,7 +24,7 @@ def generate_neighbors(current_node):
 
             #On check si le coup est possible (dans la grille)
             if 0 <= newY < 3 and 0 <= newX < 3:
-                new_state = copy.deepcopy(current_node.grid)
+                new_state = deepcopy(current_node.grid)
                 #on genere le coup suivant et on l'ajoute à la liste résultat
                 new_state[emptyY][emptyX] = current_node.grid[newY][newX]
                 new_state[newY][newX] = current_node.grid[emptyY][emptyX]
@@ -95,7 +60,7 @@ def a_star(initialGrid, goalGrid, heuristic_fct):
 
         closed_set.add(tuple(map(tuple, current_node.grid)))
 
-        for neighbor in generate_neighbors(current_node):
+        for neighbor in generateNeighbors(current_node):
             if tuple(map(tuple, neighbor.grid)) not in closed_set:
                 neighbor.previousWeights = current_node.previousWeights + 1
                 neighbor.weight = heuristic_fct(neighbor.grid)
@@ -107,10 +72,9 @@ def a_star(initialGrid, goalGrid, heuristic_fct):
     return None  # Aucun chemin trouvé
 
 
-def process():
+def process(complexity=100):
     
-    goalGrid = [[1,2,3],[4,5,6],[7,8,None]]
-    complexity = 100
+    
     possible = False
     heuristic_Fct = manhattan_heuristic
     # heuristic_Fct = hamming_heuristic
@@ -119,13 +83,12 @@ def process():
         # Exemple d'utilisation
         initialGrid = getRandomGrid(complexity)
         
-        solution_path = a_star(initialGrid, goalGrid, heuristic_Fct)
+        solution_path = a_star(initialGrid, GOAL_GRID, heuristic_Fct)
 
         if solution_path:
             possible = True
-        else:
-            complexity -= 10
-            
+        
+        print(f"not possible, complex={complexity}")
     # for step, state in enumerate(solution_path):
     #     print(f"Step {step + 1}:")
     #     for row in state:
