@@ -1,3 +1,4 @@
+from colors import BLUE,BLACK,WHITE,YELLOW
 import Astar
 import pygame
 
@@ -5,11 +6,6 @@ pygame.init()
 titre = pygame.display.set_caption("Taquin")
 
 clock = pygame.time.Clock()
-
-skyblue = 135,206,235
-black = 0,0,0
-white = 255,255,255
-yellow = 255,255,0
 
 windowHeight = 800
 windowWidth = 1280
@@ -23,7 +19,7 @@ img = pygame.image.load("img/PDPPaular.png")
 img = pygame.transform.scale(img, (450,450))
 
 whiteSquare = pygame.Surface((150,150))
-whiteSquare.fill(white)
+whiteSquare.fill(WHITE)
 
 finalGrid = [[1,2,3],[4,5,6],[7,8,None]]
 
@@ -106,17 +102,17 @@ def main():
     
     # Création d'une image de la taille de la fenêtre
     background = pygame.Surface(fenetre.get_size())
-    background.fill(skyblue)
+    background.fill(BLUE)
     
     leftSquare = pygame.Surface((450,450))
-    leftSquare.fill(white)
+    leftSquare.fill(WHITE)
     
     rightSquare = pygame.Surface((450,450))
-    rightSquare.fill(white)
+    rightSquare.fill(WHITE)
     
     whiteBG = pygame.Surface((btnWidth,btnHeight))
-    whiteBG.fill(yellow)
-    text = font.render(" Start Game ", True, yellow, black)
+    whiteBG.fill(YELLOW)
+    text = font.render(" Start Game ", True, YELLOW, BLACK)
     textRect = text.get_rect()
     textRect.center = (btnWidth // 2, btnHeight // 2)
     whiteBG.blit(text, textRect)
@@ -150,7 +146,7 @@ def main():
         
         backgrounds(fenetre, background, leftSquare, rightSquare)
         
-        pygame.draw.line(fenetre, black, (640,100), (640,700))
+        pygame.draw.line(fenetre, BLACK, (640,100), (640,700))
         
         if status == "waiting":
             fenetre.blit(startBtn, startBtnRect)
