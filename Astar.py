@@ -13,23 +13,23 @@ from copy import deepcopy
 
 #Retourne l'ensemble des voisins du carré vide
 def generateNeighbors(current_node):
-        #On recupere les coords du carré vide
-        emptyY, emptyX = getEmptyPosition(current_node.grid)
-        neighbors = []
+    #On recupere les coords du carré vide
+    emptyY, emptyX = getEmptyPosition(current_node.grid)
+    neighbors = []
 
-        #On test les 4 coups (max) possibles
-        for move in [(0, 1), (1, 0), (0, -1), (-1, 0)]:
-            newY, newX = emptyY + move[0], emptyX + move[1]
+    #On test les 4 coups (max) possibles
+    for move in [(0, 1), (1, 0), (0, -1), (-1, 0)]:
+        newY, newX = emptyY + move[0], emptyX + move[1]
 
-            #On check si le coup est possible (dans la grille)
-            if 0 <= newY < 3 and 0 <= newX < 3:
-                new_state = deepcopy(current_node.grid)
-                #on genere le coup suivant et on l'ajoute à la liste résultat
-                new_state[emptyY][emptyX] = current_node.grid[newY][newX]
-                new_state[newY][newX] = current_node.grid[emptyY][emptyX]
-                neighbors.append(TaquinNode(new_state))
+        #On check si le coup est possible (dans la grille)
+        if 0 <= newY < 3 and 0 <= newX < 3:
+            new_state = deepcopy(current_node.grid)
+            #on genere le coup suivant et on l'ajoute à la liste résultat
+            new_state[emptyY][emptyX] = current_node.grid[newY][newX]
+            new_state[newY][newX] = current_node.grid[emptyY][emptyX]
+            neighbors.append(TaquinNode(new_state))
 
-        return neighbors
+    return neighbors
     
 #Algo principal qui retourne un chemin (liste de grilles) pour arriver à 'goalGrid' depuis 'initialGrid'
 def a_star(initialGrid, goalGrid, heuristic_fct):
@@ -42,6 +42,7 @@ def a_star(initialGrid, goalGrid, heuristic_fct):
     # Ensemble des nœuds déjà explorés
     closed_set = set()  
 
+    #Ajout du noeud racine dans la file des noeuds à explorer
     heappush(open_set, initial_node)
 
     while open_set:
@@ -53,11 +54,14 @@ def a_star(initialGrid, goalGrid, heuristic_fct):
             #On retourne le chemin de toutes les etapes parcourues
             path = []
             while current_node:
+                #Pour chaque noeud parcourue on l'ajoute à la liste résultat
+                #Ainsi on remonte jusqu'a notre grille initiale (mélangée)
                 path.append(current_node.grid)
                 current_node = current_node.parent
-            #
+            #Retourne la liste des chemins inversées
             return path[::-1]
 
+        #On marque le noeud comme exploré
         closed_set.add(tuple(map(tuple, current_node.grid)))
 
         #Pour chaque suivant on l'ajoute au graphe (si il n'est pas deja dedans), en definissant son poids
@@ -65,11 +69,13 @@ def a_star(initialGrid, goalGrid, heuristic_fct):
         #que le poids pour y parvenir est inferieur à l'actuel on le met à jour
         for neighbor in generateNeighbors(current_node):
             if tuple(map(tuple, neighbor.grid)) not in closed_set:
+                #Si le noeud n'a pas été exploré on le calcule (poids actuel, poids pour y parvenir...)
                 neighbor.previousWeights = current_node.previousWeights + 1
-                neighbor.weight = heuristic_fct(neighbor.grid)
+                neighbor.weight = heuristic_fct(neighbor.grid) #calcul du poids du noeud
                 neighbor.toGetHereWeight = neighbor.previousWeights + neighbor.weight
-                neighbor.parent = current_node
+                neighbor.parent = current_node #Definition du noeud parent
 
+                #Ajout du noedu
                 heappush(open_set, neighbor)
 
     return None  # Aucun chemin trouvé
@@ -80,5 +86,7 @@ def process(heuristic_Fct = manhattan_heuristic):
     # heuristic_Fct = manhattan_heuristic
     # heuristic_Fct = hamming_heuristic
 
+    #Calcul d'une grille initiale aléatoire
     initialGrid = getRandomGrid()
+    #On retourne la liste des étapes (grilles) de la solution calculée
     return a_star(initialGrid, GOAL_GRID, heuristic_Fct)
