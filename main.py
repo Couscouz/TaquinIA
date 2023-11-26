@@ -2,9 +2,9 @@ from colors import BLUE,BLACK,WHITE
 from grid import GOAL_GRID,PLAIN_GRID
 from tools import getEmptyPosition,areNeightbours,dim3to1
 from Astar import process as AstarGeneration
-from includes.images import allParts
-import includes.window as window
-import includes.startButton as startButton
+from images import allParts
+import startButton
+import window
 import pygame
 
 

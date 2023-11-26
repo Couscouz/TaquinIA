@@ -1,15 +1,9 @@
-#Sert à simuler une file
-from heapq import heappop, heappush
-#Sert à l'algo A*
-from classes import TaquinNode
-#Fonctions annexes agissant sur une grille
-from tools import getEmptyPosition
-#Calculs d'heuristic pour une grille donnée
-from heuristic import hamming_heuristic,manhattan_heuristic
-#Grille de départ et generation de grille aleatoire
-from grid import GOAL_GRID, getRandomGrid
-#Sert à copier des listes en dimensions N
-from copy import deepcopy
+from heapq import heappop, heappush #Sert à simuler une file
+from classes import TaquinNode #Classe d'un noeud, essentiel pour A*
+from tools import getEmptyPosition #Fonctions annexes agissant sur une grille
+from heuristic import hamming_heuristic,manhattan_heuristic #2 fcts de calcul d'heuristic pour une grille donnée
+from grid import GOAL_GRID, getRandomGrid 
+from copy import deepcopy #Sert à copier des listes en dimensions N
 
 #Retourne l'ensemble des voisins du carré vide
 def generateNeighbors(current_node):
@@ -34,20 +28,22 @@ def generateNeighbors(current_node):
 #Algo principal qui retourne un chemin (liste de grilles) pour arriver à 'goalGrid' depuis 'initialGrid'
 def a_star(initialGrid, goalGrid, heuristic_fct):
     
+    #Noeud du mélange initial
     initial_node = TaquinNode(initialGrid)
+    #Noeud d'une grille finale
     goal_node = TaquinNode(goalGrid)
 
     # Liste des nœuds à explorer
-    open_set = []  
+    toExplore = []  
     # Ensemble des nœuds déjà explorés
-    closed_set = set()  
+    explored_set = set()  
 
     #Ajout du noeud racine dans la file des noeuds à explorer
-    heappush(open_set, initial_node)
+    heappush(toExplore, initial_node)
 
-    while open_set:
+    while toExplore:
         #On recupere le sommet de la pile des noeuds à explorer
-        current_node = heappop(open_set)
+        current_node = heappop(toExplore)
 
         #Si la grille est celle à atteindre
         if current_node.grid == goal_node.grid:
@@ -62,23 +58,23 @@ def a_star(initialGrid, goalGrid, heuristic_fct):
             return path[::-1]
 
         #On marque le noeud comme exploré
-        closed_set.add(tuple(map(tuple, current_node.grid)))
+        explored_set.add(tuple(map(tuple, current_node.grid)))
 
         #Pour chaque suivant on l'ajoute au graphe (si il n'est pas deja dedans), en definissant son poids
         #Amelioration possible : si il est deja dans le graphe et 
         #que le poids pour y parvenir est inferieur à l'actuel on le met à jour
         for neighbor in generateNeighbors(current_node):
-            if tuple(map(tuple, neighbor.grid)) not in closed_set:
+            if tuple(map(tuple, neighbor.grid)) not in explored_set:
                 #Si le noeud n'a pas été exploré on le calcule (poids actuel, poids pour y parvenir...)
                 neighbor.previousWeights = current_node.previousWeights + 1
                 neighbor.weight = heuristic_fct(neighbor.grid) #calcul du poids du noeud
                 neighbor.toGetHereWeight = neighbor.previousWeights + neighbor.weight
                 neighbor.parent = current_node #Definition du noeud parent
 
-                #Ajout du noedu
-                heappush(open_set, neighbor)
+                #Ajout du noeud dans la file de ceux à explorer
+                heappush(toExplore, neighbor)
 
-    return None  # Aucun chemin trouvé
+    return None  # Aucun chemin trouvé, n'arrive que si le mélange initial est incorrect
 
 #Permet d'autiliser l'algo A*
 def process(heuristic_Fct = manhattan_heuristic):

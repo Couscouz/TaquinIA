@@ -1,5 +1,5 @@
-import includes.window as window
 from colors import YELLOW,BLACK
+import window
 import pygame
 
 WIDTH = 450
