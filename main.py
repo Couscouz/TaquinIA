@@ -22,16 +22,19 @@ whiteSquare.fill(WHITE)
 
 #---------------------------------------------  
 
+#Initialisation de la partie en determinant la grille de depart et sa resolution (res path[0] et path)
 def initGame():
     path = AstarGeneration()
     return path,path[0],path[0],0
-    
+
+#Cloture de la partie, mise en place du message de fin correspondant au resultat
 def endGame(played,sentence):
     endMessage = fontIndics.render(sentence, True, BLACK)
     msgRect = endMessage.get_rect()
     msgRect.center = (window.WIDTH // 2, window.HEIGHT // 8) 
     return endMessage,msgRect,played+1
-    
+
+#Check les grilles pour determiner la suite de la partie (gagnant, égalité, partie non terminée)
 def checkWin(leftGrid,rightGrid):
     if leftGrid == GOAL_GRID and rightGrid != GOAL_GRID:
         return "Bien joué vous avez gagné!"
@@ -41,7 +44,8 @@ def checkWin(leftGrid,rightGrid):
         return "Egalité !"
     else:
         return None
-    
+
+#Effectue un mouvement sur une grille depuis la case cliquée
 def processMove(grid, click):
     noneY, noneX = getEmptyPosition(grid)
     if not areNeightbours(noneX,noneY,click[1],click[0]):
@@ -53,6 +57,7 @@ def processMove(grid, click):
     grid[click[0]][click[1]] = None
     return True
 
+#Superpose les cases d'une grille sur la fenetre 
 def refreshGrid(background, grid):
     index = 0
     order = dim3to1(grid)
@@ -64,10 +69,12 @@ def refreshGrid(background, grid):
                 background.blit(whiteSquare, (x,y))
             index += 1
 
-def backgrounds(fenetre,background,leftSquare,rightSquare):
+#Affichage des zones de la fenetre et de la ligne centrale
+def graphics(fenetre,background,leftSquare,rightSquare):
     fenetre.blit(background, (0, 0))
     fenetre.blit(leftSquare, (95, 175))
     fenetre.blit(rightSquare, (735, 175))
+    pygame.draw.line(fenetre, BLACK, (640,150), (640,650))
 
 def isStartButtonClicked(pos):
     return (startButton.POSITION[0][0] <= pos[0] <= startButton.POSITION[1][0] and startButton.POSITION[0][1] <= pos[1] <= startButton.POSITION[1][1])
@@ -106,12 +113,10 @@ def main():
     rightSquare = pygame.Surface((450,450))
     rightSquare.fill(WHITE)
 
-    coupsCompteur = fontIndics.render(f"Coups joués : 0", True, BLACK)
-    coupsRect = coupsCompteur.get_rect()
-    coupsRect.center = (window.WIDTH // 2, window.HEIGHT // 8)
-    
-    endMessage, msgRect = None,None
-    
+    moveCounter = fontIndics.render(f"Coups joués : 0", True, BLACK)
+    moveRect = moveCounter.get_rect()
+    moveRect.center = (window.WIDTH // 2, window.HEIGHT // 8)
+        
     whiteBG = pygame.Surface((startButton.WIDTH,startButton.HEIGHT))
     whiteBG.fill(YELLOW)
     text = fontTitle.render(" Start Game ", True, YELLOW, BLACK)
@@ -122,9 +127,8 @@ def main():
     startBtnRect = whiteBG.get_rect()
     startBtnRect.center = (window.WIDTH // 2, window.HEIGHT // 2)
     
-    sentence = None
-    coups = 0
-    played = 0
+    coups = 0  # nb de coups joués dans la partie actuelle
+    played = 0 # nb de parties jouées
     
     while running:
         
@@ -138,7 +142,7 @@ def main():
                     if analyse:
                         if processMove(leftGrid, analyse):
                             coups += 1
-                            coupsCompteur = fontIndics.render(f"Coups joués : {coups}", True, BLACK)
+                            moveCounter = fontIndics.render(f"Coups joués : {coups}", True, BLACK)
                             rightGrid = path[coups]
                         sentence = checkWin(leftGrid,rightGrid)
                         if sentence is not None:
@@ -149,19 +153,19 @@ def main():
                     if isStartButtonClicked(pos):
                         status = "playing"
                         path,leftGrid,rightGrid,coups = initGame()
-                        coupsCompteur = fontIndics.render(f"Coups joués : 0", True, BLACK)
+                        moveCounter = fontIndics.render(f"Coups joués : 0", True, BLACK)
         #----------Drawnings-------
         
-        backgrounds(fenetre, background, leftSquare, rightSquare)
+        graphics(fenetre, background, leftSquare, rightSquare)
         
-        pygame.draw.line(fenetre, BLACK, (640,150), (640,650))
+        
         
         if status == "waiting":
             fenetre.blit(startBtn, startBtnRect)
             if played > 0:
                 fenetre.blit(endMessage, msgRect)
         elif status == "playing":
-            fenetre.blit(coupsCompteur, coupsRect)
+            fenetre.blit(moveCounter, moveRect)
 
         #leftSquare.blit(img, (0,0))
         refreshGrid(leftSquare,leftGrid)
