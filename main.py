@@ -1,4 +1,4 @@
-from colors import BLUE,BLACK,WHITE,YELLOW
+from colors import BLUE,BLACK,WHITE
 from grid import GOAL_GRID,PLAIN_GRID
 from tools import getEmptyPosition,areNeightbours,dim3to1
 from Astar import process as AstarGeneration
@@ -10,17 +10,35 @@ import pygame
 
 pygame.init()
 
+#2 polices nécessaires (bouton et compteur)
 fontTitle = pygame.font.Font('freesansbold.ttf', 72)
 fontIndics = pygame.font.Font('freesansbold.ttf', 48)
 
+#Initialisation de la fenetre, du titre et de l'horloge (pour le délai de rafraichissement)
 titre = pygame.display.set_caption("Taquin")
 fenetre = pygame.display.set_mode((window.WIDTH, window.HEIGHT))
 clock = pygame.time.Clock()
 
+#-------------------Surfaces------------------------
+
+#Carré blanc simulant la case vide dans une grille
 whiteSquare = pygame.Surface((150,150))
 whiteSquare.fill(WHITE)
 
-#---------------------------------------------  
+# Création d'une image de la taille de la fenêtre
+background = pygame.Surface(fenetre.get_size())
+background.fill(BLUE)
+
+#Surfaces des fonds de taquin
+leftSquare = pygame.Surface((450,450))
+rightSquare = pygame.Surface((450,450))
+
+#Compteur de coups simulé dans le but de recuperer l'emplacement (moveRect) qui ne sera plus modifié
+moveCounter = fontIndics.render(f"Coups joués : 0", True, BLACK)
+moveRect = moveCounter.get_rect()
+moveRect.center = (window.WIDTH // 2, window.HEIGHT // 8)
+
+#------------------Fonctions-------------------------  
 
 #Initialisation de la partie en determinant la grille de depart et sa resolution (res path[0] et path)
 def initGame():
@@ -79,82 +97,77 @@ def graphics(fenetre,background,leftSquare,rightSquare):
 
 #Return Y,X, isLeft
 def getSquareFromClick(location):
+    #Definitions des empalcements des cases sur l'ecran 
     horizontal = [(95,245), (246, 395), (396,545)]
-    vertical = [(175,325),(326,475),(476,625)]
-    offset = 0
-    
-    if location[0] > 640:
-        offset = 640    
+    vertical = [(175,325),(326,475),(476,625)] 
     for y in range(3):
         for x in range(3):
-            if ((offset+horizontal[x][0]) < location[0] <= (offset+horizontal[x][1])) and (vertical[y][0] < location[1] <= vertical[y][1]):
-                return y,x, (offset==0)
-
+            if ((horizontal[x][0]) < location[0] <= (horizontal[x][1])) and (vertical[y][0] < location[1] <= vertical[y][1]):
+                return y,x
+    #Si le clic ne correspond à aucune case il vaut None
     return None
 
+
 def main():
-    
+    #Valeur des grille au lancement, les 9 carrés sont bien triés pour un bel affichage avant la 1ere partie
     leftGrid = PLAIN_GRID
     rightGrid = PLAIN_GRID
     
     running = True
-    status = "waiting" #playing
+    #La partie repose sur 2 status 
+    # -> "waiting" quand partie pas en cours (si terminée alors elle est de nouveau en waiting)
+    # -> "playing" quand partie en cours
+    status = "waiting"
     
-    # Création d'une image de la taille de la fenêtre
-    background = pygame.Surface(fenetre.get_size())
-    background.fill(BLUE)
-    
-    #Carré blanc du fond de taquin
-    leftSquare = pygame.Surface((450,450))
-    leftSquare.fill(WHITE)
-    rightSquare = pygame.Surface((450,450))
-    leftSquare.fill(WHITE)
-
-    #Compteur de coups
-    moveCounter = fontIndics.render(f"Coups joués : 0", True, BLACK)
-    moveRect = moveCounter.get_rect()
-    moveRect.center = (window.WIDTH // 2, window.HEIGHT // 8)
-    
-    
-    
-    coups = 0  # nb de coups joués dans la partie actuelle
-    played = 0 # nb de parties jouées
+    # nb de coups joués dans la partie actuellen et nb de parties jouées
+    coups = 0  
+    played = 0
     
     while running:
-        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                #Fermeture classiques
                 running = False
             elif event.type == pygame.MOUSEBUTTONUP:
+                #Recuperation du clic de souris
                 pos = pygame.mouse.get_pos()
                 if status == "playing":
+                    #si partie en cours on recupere le possible carré correspondant au clic
                     analyse = getSquareFromClick(pos)
                     if analyse:
+                        #si le coups est jouable il est fait et le compteur est incrémenté
                         if processMove(leftGrid, analyse):
                             coups += 1
                             moveCounter = fontIndics.render(f"Coups joués : {coups}", True, BLACK)
                             rightGrid = path[coups]
+                        #Verification des conditions de fin de partie
                         sentence = checkWin(leftGrid,rightGrid)
                         if sentence is not None:
+                            #si partie terminée on affiche le resultat et retour en phase d'attente (avec bouton)
                             status = "waiting"
                             endMessage,msgRect,played = endGame(played,sentence)     
                         
                 elif status == "waiting":
                     if startButton.isClicked(pos):
+                        #si phase d'attente et que le bouton start est cliqué, initialisation de la partie (grilles, compteur,solution)
                         status = "playing"
                         path,leftGrid,rightGrid,coups = initGame()
                         moveCounter = fontIndics.render(f"Coups joués : 0", True, BLACK)
-        #----------Drawnings-------
         
+        #----------Visuels-------
+        
+        #Superposition des zones de fond
         graphics(fenetre, background, leftSquare, rightSquare)
         
-        
-        
+        #Affichages specifiques à la phase actuelle de la partie 
         if status == "waiting":
+            #Bouton start si partie en attente
             fenetre.blit(startButton.content, startButton.rect)
             if played > 0:
+                #message de fin si partie terminée (simulé par attente et au moins 1 partie jouée)
                 fenetre.blit(endMessage, msgRect)
         elif status == "playing":
+            #Compteur de coups si partie en cours
             fenetre.blit(moveCounter, moveRect)
 
         #leftSquare.blit(img, (0,0))
