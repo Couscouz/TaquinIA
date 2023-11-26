@@ -38,6 +38,14 @@ moveCounter = fontIndics.render(f"Coups joués : 0", True, BLACK)
 moveRect = moveCounter.get_rect()
 moveRect.center = (window.WIDTH // 2, window.HEIGHT // 8)
 
+joueur = fontIndics.render("Joueur", True, BLACK)
+joueurRect = joueur.get_rect()
+joueurRect.center = (window.WIDTH // 4, 5 * window.HEIGHT // 6)
+
+ia = fontIndics.render("IA", True, BLACK)
+iaRect = ia.get_rect()
+iaRect.center = (3 * window.WIDTH // 4, 5 * window.HEIGHT // 6)
+
 #------------------Fonctions-------------------------  
 
 #Initialisation de la partie en determinant la grille de depart et sa resolution (res path[0] et path)
@@ -169,6 +177,9 @@ def main():
         elif status == "playing":
             #Compteur de coups si partie en cours
             fenetre.blit(moveCounter, moveRect)
+            #Indication visuelle sur qui possede quelle grille
+            fenetre.blit(joueur, joueurRect)
+            fenetre.blit(ia, iaRect)
 
         #leftSquare.blit(img, (0,0))
         refreshGrid(leftSquare,leftGrid)
