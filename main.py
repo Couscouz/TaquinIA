@@ -8,8 +8,6 @@ import includes.startButton as startButton
 import pygame
 
 
-complexity = 500
-
 pygame.init()
 
 fontTitle = pygame.font.Font('freesansbold.ttf', 72)
@@ -25,7 +23,7 @@ whiteSquare.fill(WHITE)
 #---------------------------------------------  
 
 def initGame():
-    path = AstarGeneration(complexity)
+    path = AstarGeneration()
     return path,path[0],path[0],0
     
 def endGame(played,sentence):

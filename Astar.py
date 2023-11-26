@@ -75,10 +75,10 @@ def a_star(initialGrid, goalGrid, heuristic_fct):
     return None  # Aucun chemin trouvé
 
 #Permet d'autiliser l'algo A*
-def process(complexity=100, heuristic_Fct = manhattan_heuristic):
+def process(heuristic_Fct = manhattan_heuristic):
     
     # heuristic_Fct = manhattan_heuristic
     # heuristic_Fct = hamming_heuristic
 
-    initialGrid = getRandomGrid(complexity)
+    initialGrid = getRandomGrid()
     return a_star(initialGrid, GOAL_GRID, heuristic_Fct)

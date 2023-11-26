@@ -6,7 +6,8 @@ GOAL_GRID = [[1,2,3],[4,5,6],[7,8,None]]
 PLAIN_GRID = [[1,2,3],[4,5,6],[7,8,9]]
 
 #Melange inital de la grille, un random complet peut emmener à des resolutions impossible
-def getRandomGrid(complexity=100):
+#Complexité de 1000 par défaut (correspond à 1000 permutations), peut etre modifié 
+def getRandomGrid(complexity=1000):
     grid = GOAL_GRID
     #On part d'une grille résolue pour echanger effectuer un mouvement 
     #dans un direction aleatoire X fois (X=complexity)
