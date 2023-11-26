@@ -2,12 +2,11 @@ import pygame
 
 pygame.init()
 
-img = pygame.image.load("img/PDPPaular.png")
-img = pygame.transform.scale(img, (450,450))
-
-allPart = []
-for i in range(9):
-    temp = pygame.image.load(f"img/{i+1}.jpg")
-    allPart.append(pygame.transform.scale(temp, (150,150)))
+#Recuperer chacune des 9 parties du logo Paularis pour les stocker dans une liste d'images
+#afin d'y acceder facilement plus tard
+allParts = []
+for i in range(1,10):
+    temp = pygame.image.load(f"img/{i}.jpg")
+    allParts.append(pygame.transform.scale(temp, (150,150)))
     
 pygame.quit()

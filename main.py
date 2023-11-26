@@ -2,7 +2,7 @@ from colors import BLUE,BLACK,WHITE
 from grid import GOAL_GRID,PLAIN_GRID
 from tools import getEmptyPosition,areNeightbours,dim3to1
 from Astar import process as AstarGeneration
-from includes.images import allPart
+from includes.images import allParts
 import includes.window as window
 import includes.startButton as startButton
 import pygame
@@ -82,7 +82,7 @@ def refreshGrid(background, grid):
     for y in [0, 150, 300]:
         for x in [0, 150, 300]:
             if order[index] != None:
-                background.blit(allPart[order[index]-1], (x,y))
+                background.blit(allParts[order[index]-1], (x,y))
             else:
                 background.blit(whiteSquare, (x,y))
             index += 1
