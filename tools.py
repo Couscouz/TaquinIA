@@ -11,6 +11,7 @@ def areNeightbours(y1,x1,y2,x2):
     #Decalage horizontal et vertical de 1 strictement (car 0 signifie case identique, et > 1 diagonale ou + loin)
     return abs(y2-y1) + abs(x2-x1) == 1
 
+#Convertit une matrice 3x3 en 1x9
 def dim3to1(grid):
     res = []
     for y in range(3):

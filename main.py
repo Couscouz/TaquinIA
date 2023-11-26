@@ -76,8 +76,6 @@ def graphics(fenetre,background,leftSquare,rightSquare):
     fenetre.blit(rightSquare, (735, 175))
     pygame.draw.line(fenetre, BLACK, (640,150), (640,650))
 
-def isStartButtonClicked(pos):
-    return (startButton.POSITION[0][0] <= pos[0] <= startButton.POSITION[1][0] and startButton.POSITION[0][1] <= pos[1] <= startButton.POSITION[1][1])
 
 #Return Y,X, isLeft
 def getSquareFromClick(location):
@@ -96,7 +94,6 @@ def getSquareFromClick(location):
 
 def main():
     
-    path = []
     leftGrid = PLAIN_GRID
     rightGrid = PLAIN_GRID
     
@@ -107,25 +104,18 @@ def main():
     background = pygame.Surface(fenetre.get_size())
     background.fill(BLUE)
     
+    #Carré blanc du fond de taquin
     leftSquare = pygame.Surface((450,450))
     leftSquare.fill(WHITE)
-    
     rightSquare = pygame.Surface((450,450))
-    rightSquare.fill(WHITE)
+    leftSquare.fill(WHITE)
 
+    #Compteur de coups
     moveCounter = fontIndics.render(f"Coups joués : 0", True, BLACK)
     moveRect = moveCounter.get_rect()
     moveRect.center = (window.WIDTH // 2, window.HEIGHT // 8)
-        
-    whiteBG = pygame.Surface((startButton.WIDTH,startButton.HEIGHT))
-    whiteBG.fill(YELLOW)
-    text = fontTitle.render(" Start Game ", True, YELLOW, BLACK)
-    textRect = text.get_rect()
-    textRect.center = (startButton.WIDTH // 2, startButton.HEIGHT // 2)
-    whiteBG.blit(text, textRect)
-    startBtn = whiteBG
-    startBtnRect = whiteBG.get_rect()
-    startBtnRect.center = (window.WIDTH // 2, window.HEIGHT // 2)
+    
+    
     
     coups = 0  # nb de coups joués dans la partie actuelle
     played = 0 # nb de parties jouées
@@ -150,7 +140,7 @@ def main():
                             endMessage,msgRect,played = endGame(played,sentence)     
                         
                 elif status == "waiting":
-                    if isStartButtonClicked(pos):
+                    if startButton.isClicked(pos):
                         status = "playing"
                         path,leftGrid,rightGrid,coups = initGame()
                         moveCounter = fontIndics.render(f"Coups joués : 0", True, BLACK)
@@ -161,7 +151,7 @@ def main():
         
         
         if status == "waiting":
-            fenetre.blit(startBtn, startBtnRect)
+            fenetre.blit(startButton.content, startButton.rect)
             if played > 0:
                 fenetre.blit(endMessage, msgRect)
         elif status == "playing":
